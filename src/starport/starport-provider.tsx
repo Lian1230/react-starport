@@ -7,7 +7,9 @@ import {
   useContext,
   useState,
 } from "react";
+import { Provider } from "react-redux";
 import { createReparentableSpace } from "react-reparenting";
+import { store } from "./store";
 
 export interface StarportState {
   Reparentable: any;
@@ -38,16 +40,18 @@ export const StarportProvider: FC<{
   const [portMap, setPortMap] = useState<PortMap>({});
 
   return (
-    <StarportContext.Provider
-      value={{
-        portMap,
-        Reparentable,
-        sendReparentableChild,
-        setPortMap,
-      }}
-    >
-      {children}
-    </StarportContext.Provider>
+    <Provider store={store}>
+      <StarportContext.Provider
+        value={{
+          portMap,
+          Reparentable,
+          sendReparentableChild,
+          setPortMap,
+        }}
+      >
+        {children}
+      </StarportContext.Provider>
+    </Provider>
   );
 };
 
