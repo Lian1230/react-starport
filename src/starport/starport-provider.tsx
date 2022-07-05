@@ -12,12 +12,16 @@ import { createReparentableSpace } from "react-reparenting";
 export interface StarportState {
   Reparentable: any;
   sendReparentableChild: any;
-  portDetail: PortDetail;
-  setPortDetail: Dispatch<SetStateAction<PortDetail>>;
+  portMap: PortMap;
+  setPortMap: Dispatch<SetStateAction<PortMap>>;
 }
 
-interface PortDetail {
-  location: string;
+interface PortMap {
+  [k: string]: PortState;
+}
+
+interface PortState {
+  status: string;
   cargo: ReactElement | null;
   rect?: DOMRect;
 }
@@ -31,18 +35,15 @@ const { Reparentable, sendReparentableChild } = createReparentableSpace();
 export const StarportProvider: FC<{
   children: ReactElement | ReactElement[];
 }> = ({ children }) => {
-  const [portDetail, setPortDetail] = useState<PortDetail>({
-    location: "",
-    cargo: null,
-  });
+  const [portMap, setPortMap] = useState<PortMap>({});
 
   return (
     <StarportContext.Provider
       value={{
-        portDetail,
+        portMap,
         Reparentable,
         sendReparentableChild,
-        setPortDetail,
+        setPortMap,
       }}
     >
       {children}

@@ -7,13 +7,11 @@ const Listing = () => {
     .fill(null)
     .map((_, idx) => `pokemon-${idx + 1}`);
 
-  console.log("in Listing");
-
   return (
     <div className="grid grid-cols-4 gap-4 m-10">
-      <Link to={`/detail/pokemon-1`}>
+      <Link to={`/detail/pokemon-1`} style={{ textDecoration: "none" }}>
         <Port id="image-1">
-          <Image filename="pokemon-1" className=" rounded-1 object-cover" />
+          <Image filename="pokemon-1" className="rounded-1 p-1 object-cover" />
         </Port>
       </Link>
       {/* {imageList.map((filename, idx) => (
