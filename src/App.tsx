@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Detail from "./page/Detail";
 import Listing from "./page/Listing";
-import { AirStation } from "./starport";
+import { SkyStation } from "./starport";
 import { StarportProvider } from "./starport/starport-provider";
 
 const App = () => {
@@ -13,7 +13,7 @@ const App = () => {
           <Route path="/detail/:filename" element={<Detail />} />
         </Routes>
       </BrowserRouter>
-      <AirStation />
+      <SkyStation />
     </StarportProvider>
   );
 };

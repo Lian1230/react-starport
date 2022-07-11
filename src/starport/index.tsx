@@ -4,15 +4,17 @@ import { landing, PortState, remove, updatePort } from "./reducer";
 import { StarportState, useStarport } from "./starport-provider";
 import { useAppDispatch, useAppSelector } from "./store";
 
+const DURATION = 2000;
+
 interface PortEnhanceState extends PortProps {
-  starportState: StarportState;
+  starportContext: StarportState;
   dispatch: any;
   portState: PortState;
 }
 interface PortCompState {
   portId: string;
 }
-class PortLand extends Component<PortEnhanceState, PortCompState> {
+class GroundPort extends Component<PortEnhanceState, PortCompState> {
   constructor(props: PortEnhanceState) {
     super(props);
     this.state = { portId: (Math.random() * 100).toFixed(10) };
@@ -22,7 +24,7 @@ class PortLand extends Component<PortEnhanceState, PortCompState> {
     props: PortEnhanceState,
     state: PortCompState
   ) {
-    const { id, starportState, portState, dispatch, children } = props;
+    const { id, starportContext, portState, dispatch, children } = props;
 
     const currentStatus = portState?.status;
     const expectStatus = `LANDED-${state.portId}`;
@@ -50,9 +52,14 @@ class PortLand extends Component<PortEnhanceState, PortCompState> {
         }, 10);
       } else if (currentStatus === "MOVING") {
         setTimeout(() => {
-          starportState.sendReparentableChild(`${id}-air`, `${id}-land`, 0, 0);
+          starportContext.sendReparentableChild(
+            `${id}-air`,
+            `${id}-land`,
+            0,
+            0
+          );
           dispatch(landing({ id, status: `LANDED-${state.portId}` }));
-        }, 1000);
+        }, DURATION);
       }
     }
     return null;
@@ -60,14 +67,14 @@ class PortLand extends Component<PortEnhanceState, PortCompState> {
 
   componentWillUnmount() {
     const { portId } = this.state;
-    const { id, children, starportState, dispatch } = this.props;
+    const { id, children, starportContext, dispatch } = this.props;
 
     const { width, height, top, left } =
       document.getElementById(`${id}-${portId}`)?.getBoundingClientRect() ?? {};
 
     // console.log({ id, rect });
 
-    starportState.sendReparentableChild(`${id}-land`, `${id}-air`, 0, 0);
+    starportContext.sendReparentableChild(`${id}-land`, `${id}-air`, 0, 0);
     dispatch(
       updatePort({
         id,
@@ -84,7 +91,7 @@ class PortLand extends Component<PortEnhanceState, PortCompState> {
 
   render() {
     const { portId } = this.state;
-    const { id, children, starportState, portState } = this.props;
+    const { id, children, starportContext, portState } = this.props;
     const landed = portState?.status === `LANDED-${portId}`;
 
     return (
@@ -94,9 +101,9 @@ class PortLand extends Component<PortEnhanceState, PortCompState> {
             {children}
           </div>
         )}
-        <starportState.Reparentable id={`${id}-land`}>
+        <starportContext.Reparentable id={`${id}-land`}>
           {landed ? <div id={`${id}-${portId}`}>{children}</div> : null}
-        </starportState.Reparentable>
+        </starportContext.Reparentable>
       </>
     );
   }
@@ -107,7 +114,7 @@ interface PortProps {
   children: ReactElement;
 }
 const wrapper = (Child: any) => (props: PortProps) => {
-  const starportState = useStarport();
+  const starportContext = useStarport();
   const dispatch = useAppDispatch();
   const portState = useAppSelector((state) => state.starport[props.id]);
   return (
@@ -115,37 +122,37 @@ const wrapper = (Child: any) => (props: PortProps) => {
       {...props}
       dispatch={dispatch}
       portState={portState}
-      starportState={starportState}
+      starportContext={starportContext}
     />
   );
 };
 
-export const Port = wrapper(PortLand);
+export const Port = wrapper(GroundPort);
 
-const PortAir: FC<{ id: string; portState: any }> = ({ id, portState }) => {
+const SkyPort: FC<{ id: string; portState: any }> = ({ id, portState }) => {
   const { Reparentable } = useStarport();
 
+  const isVisible = ["LIFTING", "MOVING"].includes(portState?.status);
+
   return (
-    <Reparentable id={`${id}-air`}>
-      {["LIFTING", "MOVING"].includes(portState?.status) ? (
-        <div
-          style={portState.rect}
-          className="fixed transition-all duration-1000"
-        >
-          {portState?.cargo}
-        </div>
-      ) : null}
-    </Reparentable>
+    <div
+      className={`fixed transition-all duration-${DURATION}`}
+      style={{ ...portState.rect, display: isVisible ? "block" : "none" }}
+    >
+      <Reparentable id={`${id}-air`}>
+        {isVisible && <div>{portState?.cargo}</div>}
+      </Reparentable>
+    </div>
   );
 };
 
-export const AirStation = () => {
+export const SkyStation = () => {
   const portMap = useAppSelector((state) => state.starport);
 
   return (
     <div id="air-station">
       {Object.keys(portMap).map((id) => (
-        <PortAir key={id} id={id} portState={portMap[id]} />
+        <SkyPort key={id} id={id} portState={portMap[id]} />
       ))}
     </div>
   );
