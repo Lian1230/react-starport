@@ -4,7 +4,7 @@ import { landing, PortState, remove, updatePort } from "./reducer";
 import { StarportState, useStarport } from "./starport-provider";
 import { useAppDispatch, useAppSelector } from "./store";
 
-const DURATION = 2000;
+const DURATION = 1000;
 
 interface PortEnhanceState extends PortProps {
   starportContext: StarportState;
@@ -33,12 +33,13 @@ class GroundPort extends Component<PortEnhanceState, PortCompState> {
       if (!currentStatus) {
         dispatch(landing({ id, status: `LANDED-${state.portId}` }));
       } else if (currentStatus === "LIFTING") {
-        const { width, height, top, left } =
-          document
-            .getElementById(`${id}-${state.portId}`)
-            ?.getBoundingClientRect() ?? {};
-
+        // delay to get accurate rect
         setTimeout(() => {
+          const { width, height, top, left } =
+            document
+              .getElementById(`${id}-${state.portId}`)
+              ?.getBoundingClientRect() ?? {};
+
           dispatch(
             updatePort({
               id,
@@ -49,7 +50,7 @@ class GroundPort extends Component<PortEnhanceState, PortCompState> {
               },
             })
           );
-        }, 10);
+        }, 100);
       } else if (currentStatus === "MOVING") {
         setTimeout(() => {
           starportContext.sendReparentableChild(
@@ -65,14 +66,23 @@ class GroundPort extends Component<PortEnhanceState, PortCompState> {
     return null;
   }
 
-  componentWillUnmount() {
+  rect = {};
+
+  componentDidMount() {
     const { portId } = this.state;
+    const { id } = this.props;
+
+    // delay to get accurate rect
+    setTimeout(() => {
+      const { width, height, top, left } = document
+        .getElementById(`${id}-${portId}`)
+        ?.getBoundingClientRect()!;
+      this.rect = { width, height, top, left };
+    }, 100);
+  }
+
+  componentWillUnmount() {
     const { id, children, starportContext, dispatch } = this.props;
-
-    const { width, height, top, left } =
-      document.getElementById(`${id}-${portId}`)?.getBoundingClientRect() ?? {};
-
-    // console.log({ id, rect });
 
     starportContext.sendReparentableChild(`${id}-land`, `${id}-air`, 0, 0);
     dispatch(
@@ -81,12 +91,14 @@ class GroundPort extends Component<PortEnhanceState, PortCompState> {
         portState: {
           status: "LIFTING",
           cargo: children,
-          rect: { width, height, top, left },
+          rect: this.rect,
         },
       })
     );
 
-    setTimeout(() => dispatch(remove(id)), 300);
+    setTimeout(() => {
+      dispatch(remove(id));
+    }, 300);
   }
 
   render() {

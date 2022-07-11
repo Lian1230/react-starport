@@ -11,10 +11,10 @@ const Image: FC<{ filename: string; className: string }> = ({
       <div className="bg-gray-300 rounded-md aspect-square">
         <img
           src={`/image/${filename}.png`}
-          className={`transition-all duration-1000 h-full ${className}`}
+          className={`transition-all duration-1000 w-full h-full ${className}`}
         />
       </div>
-      <span>HP: {state}</span>
+      <span className="w-full text-center truncate">HP: {state}</span>
     </div>
   );
 };
