@@ -8,10 +8,13 @@ const App = () => {
   return (
     <StarportProvider>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Listing />} />
-          <Route path="/detail/:filename" element={<Detail />} />
-        </Routes>
+        <div className="max-w-1200px m-auto">
+          <h1 className="text-light-900 text-6xl text-center my-14 italic">My Pokemon Collection</h1>
+          <Routes>
+            <Route path="/" element={<Listing />} />
+            <Route path="/detail/:filename" element={<Detail />} />
+          </Routes>
+        </div>
       </BrowserRouter>
       <SkyStation />
     </StarportProvider>

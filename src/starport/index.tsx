@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { cloneElement, Component } from "react";
 import type { FC, ReactElement } from "react";
 import { landing, PortState, remove, updatePort } from "./reducer";
 import { StarportState, useStarport } from "./starport-provider";
@@ -144,15 +144,30 @@ export const Port = wrapper(GroundPort);
 const SkyPort: FC<{ id: string; portState: any }> = ({ id, portState }) => {
   const { Reparentable } = useStarport();
 
+  const isMoving = portState?.status === "MOVING";
+
   const isVisible = ["LIFTING", "MOVING"].includes(portState?.status);
 
   return (
     <div
       className={`fixed transition-all duration-${DURATION}`}
-      style={{ ...portState.rect, display: isVisible ? "block" : "none" }}
+      style={{
+        ...portState.rect,
+        display: isVisible ? "block" : "none",
+        visibility: isMoving ? "visible" : "hidden",
+      }}
     >
       <Reparentable id={`${id}-air`}>
-        {isVisible && <div>{portState?.cargo}</div>}
+        {isVisible && (
+          <div>
+            {cloneElement(portState?.cargo, {
+              starportProps: {
+                moving: portState?.status === "MOVING",
+                duration: DURATION,
+              },
+            })}
+          </div>
+        )}
       </Reparentable>
     </div>
   );
