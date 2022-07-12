@@ -1,6 +1,7 @@
 import { css, keyframes } from "@emotion/react";
 import { faker } from "@faker-js/faker";
 import { FC, useMemo, useState } from "react";
+import { motion } from "framer-motion";
 
 const rotate = keyframes`
   from {
@@ -52,7 +53,8 @@ const Image: FC<{
   );
 
   return (
-    <div
+    <motion.div
+      layoutId={filename}
       className="grid justify-items-center"
       css={css`
         animation: ${page === "LIST" ? rotate : bounceAnimation}
@@ -74,7 +76,7 @@ const Image: FC<{
       >
         HP: {state}
       </span>
-    </div>
+    </motion.div>
   );
 };
 
