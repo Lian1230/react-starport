@@ -2,7 +2,6 @@ import { Link, useParams } from "react-router-dom";
 import { Icon } from "@iconify/react";
 import { faker } from "@faker-js/faker";
 import Image from "../component/Image";
-import { Port } from "../starport";
 import { css, keyframes } from "@emotion/react";
 
 const fadeIn = keyframes`
@@ -28,13 +27,11 @@ const Detail = () => {
         />
       </Link>
 
-      <Port id={filename}>
-        <Image
-          page="DETAIL"
-          filename={`${filename}`}
-          className="w-50vw max-h-80vh rounded-3xl"
-        />
-      </Port>
+      <Image
+        page="DETAIL"
+        filename={`${filename}`}
+        className="w-50vw max-h-80vh rounded-3xl"
+      />
 
       <p
         className="text-white text-3xl order-2 animate-delay-1000"
