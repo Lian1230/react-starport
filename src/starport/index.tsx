@@ -98,7 +98,7 @@ class GroundPort extends Component<PortEnhanceState, PortCompState> {
 
     setTimeout(() => {
       dispatch(remove(id));
-    }, 300);
+    }, 200);
   }
 
   render() {
@@ -144,8 +144,6 @@ export const Port = wrapper(GroundPort);
 const SkyPort: FC<{ id: string; portState: any }> = ({ id, portState }) => {
   const { Reparentable } = useStarport();
 
-  const isMoving = portState?.status === "MOVING";
-
   const isVisible = ["LIFTING", "MOVING"].includes(portState?.status);
 
   return (
@@ -154,7 +152,6 @@ const SkyPort: FC<{ id: string; portState: any }> = ({ id, portState }) => {
       style={{
         ...portState.rect,
         display: isVisible ? "block" : "none",
-        visibility: isMoving ? "visible" : "hidden",
       }}
     >
       <Reparentable id={`${id}-air`}>

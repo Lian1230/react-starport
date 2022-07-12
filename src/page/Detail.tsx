@@ -28,13 +28,15 @@ const Detail = () => {
         />
       </Link>
 
-      <Port id={filename}>
-        <Image
-          page="DETAIL"
-          filename={`${filename}`}
-          className="w-50vw max-h-80vh rounded-3xl"
-        />
-      </Port>
+      <div className="max-w-550px">
+        <Port id={filename}>
+          <Image
+            page="DETAIL"
+            filename={filename}
+            className="w-50vw max-h-80vh rounded-3xl"
+          />
+        </Port>
+      </div>
 
       <p
         className="text-white text-3xl order-2 animate-delay-1000"
