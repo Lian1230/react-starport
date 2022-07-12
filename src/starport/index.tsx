@@ -98,7 +98,7 @@ class GroundPort extends Component<PortEnhanceState, PortCompState> {
 
     setTimeout(() => {
       dispatch(remove(id));
-    }, 300);
+    }, 200);
   }
 
   render() {
@@ -154,20 +154,10 @@ const SkyPort: FC<{ id: string; portState: any }> = ({ id, portState }) => {
       style={{
         ...portState.rect,
         display: isVisible ? "block" : "none",
-        visibility: isMoving ? "visible" : "hidden",
       }}
     >
       <Reparentable id={`${id}-air`}>
-        {isVisible && (
-          <div>
-            {cloneElement(portState?.cargo, {
-              starportProps: {
-                moving: portState?.status === "MOVING",
-                duration: DURATION,
-              },
-            })}
-          </div>
-        )}
+        {isVisible && <div>{portState?.cargo}</div>}
       </Reparentable>
     </div>
   );
