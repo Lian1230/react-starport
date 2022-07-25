@@ -1,6 +1,5 @@
 import { css, keyframes } from "@emotion/react";
-import { faker } from "@faker-js/faker";
-import { FC, useMemo, useState } from "react";
+import { FC, memo, useRef, useState } from "react";
 
 const rotate = keyframes`
   from {
@@ -11,24 +10,38 @@ const rotate = keyframes`
   }
 `;
 
-const drop = keyframes`
-  0% {
-    transform: translate(0, 0);
+const faint = keyframes`
+  from {
+    transform: rotate(0deg);
+    transform-origin: 30vw;
   }
-  30% {
-    transform: translate(0, 20rem);
-  }
-  100% {
-    transform: rotate(0, 0);
+  to {
+    transform: rotate(360deg);
+    transform-origin: 0;
   }
 `;
 
-const jump = keyframes`
+const bounce = keyframes`
   0% {
     transform: translate(0, 0);
   }
+  10% {
+    transform: translate(0, 20vh);
+  }
+  20% {
+    transform: translate(0, -20vh);
+  }
   30% {
-    transform: translate(0, -20rem);
+    transform: translate(0, 10vh);
+  }
+  40% {
+    transform: translate(0, -10vh);
+  }
+  50% {
+    transform: translate(0, 5vh);
+  }
+  60% {
+    transform: translate(0, -5vh);
   }
   100% {
     transform: rotate(0, 0);
@@ -43,19 +56,18 @@ const Image: FC<{
     moving: boolean;
     duration: number;
   };
-}> = ({ page, filename, className, starportProps }) => {
-  const [state] = useState(() => (Math.random() * 100).toFixed(3));
+}> = memo(({ page, filename, className, starportProps }) => {
+  const [hp] = useState(() => (Math.random() * 100).toFixed(3));
+  const ref = useRef<HTMLDivElement>(null);
 
-  const bounceAnimation = useMemo(
-    () => (faker.datatype.boolean() ? drop : jump),
-    []
-  );
+  const isLowHp = Number(hp) < 60;
 
   return (
     <div
+      ref={ref}
       className="grid justify-items-center"
       css={css`
-        animation: ${page === "LIST" ? rotate : bounceAnimation}
+        animation: ${page === "LIST" ? rotate : isLowHp ? faint : bounce}
           ${starportProps?.duration}ms ease-out;
         animation-play-state: ${starportProps?.moving ? "running" : "paused"};
       `}
@@ -67,15 +79,16 @@ const Image: FC<{
         />
       </div>
       <span
-        className="w-full text-center text-green-300 truncate"
+        className="w-full text-center truncate"
         css={css`
           font-size: ${page === "LIST" ? "1rem" : "1.75rem"};
+          color: ${isLowHp ? "red" : "rgba(110, 231, 183)"};
         `}
       >
-        HP: {state}
+        HP: {hp}
       </span>
     </div>
   );
-};
+});
 
 export default Image;

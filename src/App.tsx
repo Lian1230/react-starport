@@ -8,7 +8,7 @@ const App = () => {
   return (
     <StarportProvider>
       <BrowserRouter>
-        <div className="max-w-1200px m-auto">
+        <div className="max-w-1000px m-auto">
           <h1 className="text-light-900 text-6xl text-center my-14 italic">My Pokemon Collection</h1>
           <Routes>
             <Route path="/" element={<Listing />} />

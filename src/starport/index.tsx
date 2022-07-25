@@ -1,10 +1,10 @@
-import { cloneElement, Component } from "react";
+import { cloneElement, Component, useMemo } from "react";
 import type { FC, ReactElement } from "react";
 import { landing, PortState, remove, updatePort } from "./reducer";
 import { StarportState, useStarport } from "./starport-provider";
 import { useAppDispatch, useAppSelector } from "./store";
 
-const DURATION = 1000;
+const DURATION = 1500;
 
 interface PortEnhanceState extends PortProps {
   starportContext: StarportState;
@@ -98,7 +98,7 @@ class GroundPort extends Component<PortEnhanceState, PortCompState> {
 
     setTimeout(() => {
       dispatch(remove(id));
-    }, 300);
+    }, 200);
   }
 
   render() {
@@ -144,29 +144,28 @@ export const Port = wrapper(GroundPort);
 const SkyPort: FC<{ id: string; portState: any }> = ({ id, portState }) => {
   const { Reparentable } = useStarport();
 
-  const isMoving = portState?.status === "MOVING";
-
   const isVisible = ["LIFTING", "MOVING"].includes(portState?.status);
+
+  const starportProps = useMemo(
+    () => ({
+      moving: portState?.status === "MOVING",
+      duration: DURATION,
+    }),
+    [portState?.status]
+  );
 
   return (
     <div
-      className={`fixed transition-all duration-${DURATION}`}
+      className={"fixed transition-all ease-out"}
       style={{
         ...portState.rect,
         display: isVisible ? "block" : "none",
-        visibility: isMoving ? "visible" : "hidden",
+        transitionDuration: `${DURATION}ms`,
       }}
     >
       <Reparentable id={`${id}-air`}>
         {isVisible && (
-          <div>
-            {cloneElement(portState?.cargo, {
-              starportProps: {
-                moving: portState?.status === "MOVING",
-                duration: DURATION,
-              },
-            })}
-          </div>
+          <div>{cloneElement(portState?.cargo, { starportProps })}</div>
         )}
       </Reparentable>
     </div>
